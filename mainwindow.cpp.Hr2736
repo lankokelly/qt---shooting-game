@@ -1,0 +1,96 @@
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
+#include <QDebug>
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow),
+    scene(new QGraphicsScene(0, 0, 900, 653)),
+    timer(new QTimer)//900,653
+{
+    ui->setupUi(this);
+    ui->graphicsView->setScene(scene);
+    player = new QGraphicsPixmapItem(QPixmap(":/pic/frog.png").scaled(200, 140));
+    enemy = new QGraphicsPixmapItem(QPixmap(":/pic/wolf.png").scaled(170, 170));
+    scene->addItem(player);
+    scene->addItem(enemy);
+    player->setPos(100, 450);
+    enemy->setPos(100, 50);
+    timer->start(10);
+
+    //hp
+    /*
+    int hp = 10;
+    while (player(x(),y())/enemy(x(),y())=1){
+        hp-=1;
+    }*/
+    enemymove();
+
+    /*//time
+    myTimer = new QTimer(this);
+    myLCDNumber = new QLCDNumber(this);
+    myLCDNumber->setGeometry(30,30,150,30);
+    myLCDNumber->setDigitCount(5);          //mm:ss=5
+    myTimer->start(1000);
+    showTime();
+    connect(myTimer,SIGNAL(timeout()),this,SLOT(showTime()));*/
+}
+/*void MainWindow::showTime()
+{
+    time = new QTime(0,3,0);
+    //sleep(1000);
+    myLCDNumber->display(time->toString("mm:ss"));
+}*/
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *e)
+{
+    switch(e->key()) {
+    case Qt::Key_Up:
+    case Qt::Key_W:
+        player->setPos(player->x(), player->y() - 10);
+        break;
+    case Qt::Key_Down:
+    case Qt::Key_S:
+        player->setPos(player->x(), player->y() + 10);
+        break;
+    case Qt::Key_Left:
+    case Qt::Key_A:
+        player->setPos(player->x() - 10, player->y());
+        break;
+    case Qt::Key_Right:
+    case Qt::Key_D:
+        player->setPos(player->x() + 10, player->y());
+        break;
+    }
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *e)
+{
+    bullet *b = new bullet;
+
+    if(qrand() % 2 == 0) {
+        b->setPixmap(QPixmap(":/pic/orangeball.png").scaled(40, 40));
+    }
+    else {
+        b->setPixmap(QPixmap(":/pic/purpleball.png").scaled(40, 40));
+    }
+    b->setPos(player->x() + player->pixmap().width() / 2 - b->pixmap().width() / 2, player->y() - b->pixmap().height());
+    b->connect(timer, SIGNAL(timeout()), b, SLOT(fly()));
+
+    scene->addItem(static_cast<QGraphicsPixmapItem*>(b));
+
+}
+
+
+void MainWindow::enemymove(){
+    while(1){if(qrand() % 2 == 0) {
+        enemy->setPos(player->x() + player->pixmap().width() / 6, player->y() - enemy->pixmap().height());
+        //enemy->connect(timer, SIGNAL(timeout()), b, SLOT(fly()));}
+    }}
+
+}
